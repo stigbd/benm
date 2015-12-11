@@ -81,18 +81,50 @@ module.exports = function(grunt) {
         },
 
         // LESS
+        // Transpile any .less files to .css and put the .css file in the build
+        // directory named 'myapp'.css
         less: {
-
+            transpile: {
+                files: {
+                    'build/<%= pkg.name %>.css' : [
+                        'client/styles/reset.css',
+                        'client/requires/*/css/*',
+                        'client/styles/less/main.less'
+                    ]
+                }
+            }
         },
 
         // Concat
+        // Concatenate all of the .js files into a single file.
         concat: {
-
+            'build/<%= pkg.name %>.js' : ['build/vendor.js', 'build/app.js']
         },
 
         // Copy
+        // In dev mode, copy the files from the build directory to
+        // the destination that they must reside so that our front-end app
+        // can see them and our server can serve them.
         copy: {
+            dev: {
+                files: [{
+                    src: 'build/<%= pkg.name %>.js',
+                    dest: 'public/js/<%= pkg.name %>.js'
 
+                }, {
+                    src: 'build/<%= pkg.name %>.css',
+                    dest: 'public/css/<%= pkg.name%.css>'
+                }, {
+                    src: 'client/img/*',
+                    dest: 'public/img/'
+                }]
+            },
+            prod: {
+                files: [{
+                    src: ['client/img/*'],
+                    dest: 'dist/img/'
+                }]
+            }
         },
 
         // cssmin
@@ -106,23 +138,72 @@ module.exports = function(grunt) {
         },
 
         // watch
+        // Watch all files for any time they get modified. When the do change,
+        // execute pre-existing Grunt tasks already defined.
         watch: {
-
+            scripts: {
+                files: ['client/templates/*.hbs', 'client/src/**/*.js'],
+                tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
+            },
+            less: {
+                files: ['client/styles/**/*.less'],
+                tasks: ['less:transpile', 'copy:dev']
+            },
+            test: {
+                files: ['build/app.js', 'client/spec/**/*.test.js'],
+                tasks: ['browserify:test']
+            },
+            karma: {
+                files: ['build/tests.js'],
+                tasks: ['jshint:test', 'karma:watcher:run']
+            }
         },
 
         // nodemon
+        // The same as watch, except for the server related .js files
+        // Whenever a node.js file is changed on the server, restart
+        // the server so the latest versjion is running
         nodemon: {
-
+            dev: {
+                options: {
+                    file: 'server.js',
+                    nodeArgs: ['--debug'],
+                    whatchedFolders: ['controllers', 'app'],
+                    env: {
+                        PORT: '3300'
+                    }
+                }
+            }
         },
 
         // shell
+        // A simple command line excecution. Launch the mongod server:
         shell: {
-
+            mongodb: {
+                command: 'mongod',
+                options: {
+                    async: true
+                }
+            }
         },
 
         // concurrent
+        // Ensure that we can execute a number of "blocking" tasks
+        // asynchronously at the same time
         concurrent: {
-
+            dev: {
+                tasks: ['nodemon:dev', 'shell:mongodb', 'watch:scripts',
+                'watch:less', 'watch:test'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            },
+            test: {
+                tasks: ['watch:karma'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            }
         },
 
         //karma
@@ -131,8 +212,11 @@ module.exports = function(grunt) {
         },
 
         // jsHint
+        // Run jsHint syntax checking on all necessary .js files
         jshint: {
-
+            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js'],
+            dev: ['client/src/**/*.js'],
+            test: ['client/spec(/**/*.js)']
         }
     });
 
