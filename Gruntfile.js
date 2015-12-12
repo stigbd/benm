@@ -206,9 +206,32 @@ module.exports = function(grunt) {
             }
         },
 
-        //karma
+        //test client with karma
         karma: {
+            options: {
+                configFile: 'karma.conf.js'
+            },
+            watcher: {
+                background: true,
+                singleRun: false
+            },
+            test: {
+                singleRun: true
+            }
+        },
 
+        // test server with simplemocha
+        simplemocha: {
+            options: {
+                globals: ['expect', 'sinon'],
+                timeout: 3000,
+                ignoreLeaks: false,
+                ui: 'bdd',
+                reporter: 'spec'
+            },
+            server: {
+                src: ['spec/spechelper.js', 'spec/**/*test.js']
+            }
         },
 
         // jsHint
@@ -231,8 +254,9 @@ module.exports = function(grunt) {
     'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
     // server
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
-    // test:client
-    grunt.registerTask('test:client', ['karma:test']);
+    // test:server
+    grunt.registerTask('test:server', ['simplemocha:server']);
     // tdd
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
+    grunt.registerTask('test', ['test:server']);
 };
