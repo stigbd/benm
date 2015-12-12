@@ -12,6 +12,7 @@ module.exports = {
             if (err) {
                 res.json({error: 'Contact not found.'});
             } else {
+                res.statusCode = 200;
                 res.json(contact);
             }
         });
@@ -23,6 +24,7 @@ module.exports = {
             if (err) {
                 res.json({error: 'Error adding contact.'});
             } else {
+                res.statusCode = 201;
                 res.json(contact);
             }
         });

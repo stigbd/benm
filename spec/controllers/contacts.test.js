@@ -3,7 +3,7 @@ modelsStub = {},
 md5Stub = function(string) { return string; },
 contacts = proxyquire('../../controllers/contacts', {
     '../app/models' : modelsStub,
-    'MD5': md5Stub
+    'md5': md5Stub
 });
 
 var res = {},
@@ -47,6 +47,11 @@ describe('Contacts Controller', function() {
     describe('getById', function() {
         it('should be defined', function() {
             expect(contacts.getById).to.be.a('function');
+        });
+
+        it('should send status 200 on successful retrieve', function() {
+            contacts.getById(req, res);
+            expect(res.statusCode).to.equal(200);
         });
 
         it('should send json on successful retrieve', function() {
