@@ -1,7 +1,7 @@
 var proxyquire = require('proxyquire'),
 modelsStub = {},
 md5Stub = function(string) { return string; },
-contacts = proxyquire('../../controllers/contacts', {
+contacts = proxyquire('../../server/controllers/contacts', {
     '../app/models' : modelsStub,
     'md5': md5Stub
 });
