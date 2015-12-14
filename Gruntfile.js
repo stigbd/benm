@@ -221,7 +221,7 @@ module.exports = function(grunt) {
         },
 
         // test server with simplemocha
-        simplemocha: {
+        mochaTest: {
             options: {
                 globals: ['expect', 'sinon'],
                 timeout: 3000,
@@ -255,7 +255,7 @@ module.exports = function(grunt) {
     // server
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
     // test:server
-    grunt.registerTask('test:server', ['simplemocha:server']);
+    grunt.registerTask('test:server', ['mochaTest:server']);
     // tdd
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
     grunt.registerTask('test', ['test:server']);
