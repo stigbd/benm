@@ -21,6 +21,9 @@ module.exports = function(grunt) {
             dev: {
                 src: ['build/app.js', 'build/<%= pkg.name%>.css', 'build/<%= pkg.name %>.js']
             },
+            coverage: {
+                src: ['spec/coverage/']
+            },
             prod: ['dist']
         },
 
@@ -118,6 +121,12 @@ module.exports = function(grunt) {
                     src: 'client/img/*',
                     dest: 'public/img/'
                 }]
+            },
+            views: {
+                expand: true,
+                flatten: true,
+                src: ['server/app/views/*'],
+                dest: 'spec/coverage/instrument/app/views'
             },
             prod: {
                 files: [{
@@ -234,6 +243,42 @@ module.exports = function(grunt) {
             }
         },
 
+        // start - code coverage settings
+
+        env: {
+            coverage: {
+                APP_DIR_FOR_CODE_COVERAGE: '../spec/coverage/instrument/app/'
+            }
+        },
+
+        instrument: {
+            files: 'server/app/*.js',
+            options: {
+                lazy: true,
+                basePath: 'spec/coverage/instrument/'
+            }
+        },
+
+
+        storeCoverage: {
+            options: {
+                dir: 'spec/coverage/reports'
+            }
+        },
+
+
+        makeReport: {
+            src: 'spec/coverage/reports/**/*.json',
+            options: {
+                type: 'lcov',
+                dir: 'spec/coverage/reports',
+                print: 'detail'
+            }
+        },
+
+        // end - code coverage settings
+
+
         // jsHint
         // Run jsHint syntax checking on all necessary .js files
         jshint: {
@@ -259,4 +304,6 @@ module.exports = function(grunt) {
     // tdd
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
     grunt.registerTask('test', ['test:server']);
+    grunt.registerTask('coverage', ['jshint', 'clean', 'copy:views', 'env:coverage',
+    'instrument', 'mochaTest:server', 'storeCoverage', 'makeReport']);
 };
