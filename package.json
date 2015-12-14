@@ -2,10 +2,10 @@
   "name": "benm",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "grunt test",
-    "start": "node server.js"
+    "start": "node server/server.js"
   },
   "author": "",
   "license": "ISC",
