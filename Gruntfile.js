@@ -24,6 +24,7 @@ module.exports = function(grunt) {
             coverage: {
                 src: ['spec/coverage/']
             },
+            coverageIstrument: 'spec/coverage/instrument/',
             prod: ['dist']
         },
 
@@ -123,10 +124,12 @@ module.exports = function(grunt) {
                 }]
             },
             views: {
-                expand: true,
-                flatten: true,
-                src: ['server/app/views/*'],
-                dest: 'spec/coverage/instrument/app/views'
+                src: 'server/**/*',
+                dest: 'spec/coverage/instrument/'
+            },
+            tests: {
+                src: 'spec/**/*',
+                dest: 'spec/coverage/instrument/'
             },
             prod: {
                 files: [{
@@ -239,20 +242,15 @@ module.exports = function(grunt) {
                 reporter: 'spec'
             },
             server: {
-                src: ['spec/spechelper.js', 'spec/**/*test.js']
+                src: ['spec/spechelper.js',
+                '<%= grunt.option("testBasePath") %>' + '**/*.js']
             }
         },
 
-        // start - code coverage settings
-
-        env: {
-            coverage: {
-                APP_DIR_FOR_CODE_COVERAGE: '../spec/coverage/instrument/app/'
-            }
-        },
+        // istanbul start - code coverage settings
 
         instrument: {
-            files: 'server/app/*.js',
+            files: 'server/**/*.js',
             options: {
                 lazy: true,
                 basePath: 'spec/coverage/instrument/'
@@ -268,7 +266,7 @@ module.exports = function(grunt) {
 
 
         makeReport: {
-            src: 'spec/coverage/reports/**/*.json',
+            src: 'spec/coverage/reports/*.json',
             options: {
                 type: 'lcov',
                 dir: 'spec/coverage/reports',
@@ -282,9 +280,11 @@ module.exports = function(grunt) {
         // jsHint
         // Run jsHint syntax checking on all necessary .js files
         jshint: {
-            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js'],
+            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js',
+            'server/app/**/*.js', 'server/controllers/**/*.js',
+            'server/views/**/*.js', 'server/server.js'],
             dev: ['client/src/**/*.js'],
-            test: ['client/spec(/**/*.js)']
+            test: ['spec/**/*.js', '!spec/coverage/**', 'client/spec/**/*.js)']
         }
     });
 
@@ -299,11 +299,15 @@ module.exports = function(grunt) {
     'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
     // server
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
-    // test:server
-    grunt.registerTask('test:server', ['mochaTest:server']);
     // tdd
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
-    grunt.registerTask('test', ['test:server']);
-    grunt.registerTask('coverage', ['jshint', 'clean', 'copy:views', 'env:coverage',
-    'instrument', 'mochaTest:server', 'storeCoverage', 'makeReport']);
+    // test:server with coverage
+    grunt.registerTask('test', ['jshint', 'clean:coverage', 'copy:tests',
+    'copy:views', 'setTestDir', 'instrument',
+    'mochaTest:server',
+    'storeCoverage', 'makeReport']);
+
+    grunt.registerTask('setTestDir', function () {
+        grunt.option('testBasePath', 'spec/coverage/instrument/');
+    });
 };
