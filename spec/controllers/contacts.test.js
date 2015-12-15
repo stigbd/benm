@@ -1,3 +1,4 @@
+/* jshint -W030 */
 var proxyquire = require('proxyquire'),
 modelsStub = {},
 md5Stub = function(string) { return string; },
