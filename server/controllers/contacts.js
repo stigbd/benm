@@ -37,7 +37,7 @@ module.exports = {
             } else {
                 res.json(updated);
             }
-        })
+        });
     },
     delete: function(req, res) {
         models.Contact.findOne({ _id: req.params.id }, function(err, contact) {
@@ -46,7 +46,7 @@ module.exports = {
             } else {
                 contact.remove(function(err, contact){
                     res.json(200, {status: 'Success'});
-                })
+                });
             }
         });
     }
