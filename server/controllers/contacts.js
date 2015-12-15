@@ -25,7 +25,7 @@ module.exports = {
                 res.json({error: 'Error adding contact.'});
             } else {
                 res.statusCode = 201;
-                res.json(contact);
+                res.json(null);
             }
         });
     },
@@ -45,7 +45,7 @@ module.exports = {
                 res.json({error: 'Contact not found.'});
             } else {
                 contact.remove(function(err, contact){
-                    res.json(200, {status: 'Success'});
+                    res.json(204, {status: 'No content'});
                 });
             }
         });

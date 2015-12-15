@@ -5,6 +5,16 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        // jsHint
+        // Run jsHint syntax checking on all necessary .js files
+        jshint: {
+            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js',
+            'server/app/**/*.js', 'server/controllers/**/*.js',
+            'server/views/**/*.js', 'server/server.js'],
+            dev: ['client/src/**/*.js'],
+            test: ['spec/**/*.js', '!spec/coverage/**', 'client/spec/**/*.js)']
+        },
+
         // bower
         bower: {
             install: {
@@ -276,15 +286,20 @@ module.exports = function(grunt) {
 
         // end - code coverage settings
 
-
-        // jsHint
-        // Run jsHint syntax checking on all necessary .js files
-        jshint: {
-            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js',
-            'server/app/**/*.js', 'server/controllers/**/*.js',
-            'server/views/**/*.js', 'server/server.js'],
-            dev: ['client/src/**/*.js'],
-            test: ['spec/**/*.js', '!spec/coverage/**', 'client/spec/**/*.js)']
+        // test for coverage thresholds
+        coverage: {
+            default: {
+              options: {
+                thresholds: {
+                  'statements': 90,
+                  'branches': 90,
+                  'lines': 90,
+                  'functions': 90
+                },
+                dir: 'coverage',
+                root: 'spec'
+              }
+            }
         }
     });
 
@@ -305,7 +320,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['jshint', 'clean:coverage', 'copy:tests',
     'copy:views', 'setTestDir', 'instrument',
     'mochaTest:server',
-    'storeCoverage', 'makeReport']);
+    'storeCoverage', 'makeReport', 'clean:coverageIstrument']);
 
     grunt.registerTask('setTestDir', function () {
         grunt.option('testBasePath', 'spec/coverage/instrument/');

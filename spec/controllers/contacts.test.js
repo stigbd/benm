@@ -72,10 +72,78 @@ describe('Contacts Controller', function() {
     });
 
     describe('add', function() {
-        //todo
+        beforeEach(function() {
+            req.body = {
+                name: 'testing',
+                email: 'test@testing.com',
+                phone: '123-456-7890'
+            };
+        });
+
+        it('should be defined', function() {
+            expect(contacts.add).to.be.a('function');
+        });
+
+        it('should send status 201 on successful retrieve', function() {
+            modelsStub.Contact = sinon.spy(function() {
+                modelsStub.Contact.prototype.save = function(callback) {
+                    callback(null, req.body);
+                };
+                return;
+            });
+            contacts.add(req, res);
+            expect(res.statusCode).to.equal(201);
+        });
+
+        it('should return error on failed save', function() {
+
+            modelsStub.Contact = sinon.spy(function() {
+                modelsStub.Contact.prototype.save = function(callback) {
+                    callback({}, req.body);
+                };
+                return;
+            });
+
+            contacts.add(req, res);
+            expect(res.json).calledWith({error: 'Error adding contact.'});
+        });
     });
 
     describe('delete', function() {
-        //todo
+        beforeEach(function() {
+             req.body = {
+                 id: '1',
+                 name: 'testing',
+                 email: 'test@testing.com',
+                 phone: '123-456-7890'
+             };
+         });
+
+         it('should be defined', function() {
+             expect(contacts.delete).to.be.a('function');
+         });
+
+         it('should return json on save', function() {
+             var contactSpy = {remove: sinon.spy()};
+             modelsStub.Contact = {
+                 findOne: function(query, callback) {
+                     callback(null, contactSpy);
+                 }
+             };
+
+             contacts.delete(req, res);
+             expect(contactSpy.remove).calledOnce;
+         });
+   
+         it('should return error on failed save', function() {
+             modelsStub.Contact = {
+                 findOne: function(query, callback) {
+                     callback({}, {});
+                 }
+             };
+
+             contacts.delete(req, res);
+             expect(res.json).calledWith({error: 'Contact not found.'});
+         });
     });
 });
