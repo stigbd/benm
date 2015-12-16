@@ -29,16 +29,16 @@ module.exports = {
             }
         });
     },
-    update: function(req, res) {
-        console.log(req.body);
-        models.Contact.update({ _id: req.body.id }, req.body, function(err, updated) {
-            if (err) {
-                res.json({error: 'Contact not found.'});
-            } else {
-                res.json(updated);
-            }
-        });
-    },
+    // update: function(req, res) {
+    //     console.log(req.body);
+    //     models.Contact.update({ _id: req.body.id }, req.body, function(err, updated) {
+    //         if (err) {
+    //             res.json({error: 'Contact not found.'});
+    //         } else {
+    //             res.json(updated);
+    //         }
+    //     });
+    // },
     delete: function(req, res) {
         models.Contact.findOne({ _id: req.params.id }, function(err, contact) {
             if (err) {

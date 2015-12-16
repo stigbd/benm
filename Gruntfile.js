@@ -8,21 +8,11 @@ module.exports = function(grunt) {
         // jsHint
         // Run jsHint syntax checking on all necessary .js files
         jshint: {
-            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js',
+            all: ['Gruntfile.js',
             'server/app/**/*.js', 'server/controllers/**/*.js',
             'server/views/**/*.js', 'server/server.js'],
-            dev: ['client/src/**/*.js'],
-            test: ['spec/**/*.js', '!spec/coverage/**', 'client/spec/**/*.js)']
-        },
-
-        // bower
-        bower: {
-            install: {
-                options: {
-                    targetDir: 'client/requires',
-                    layout: 'byComponent'
-                }
-            }
+            dev: ['server/app/**/*.js'],
+            test: ['spec/**/*.js', '!spec/coverage/**']
         },
 
         // clean
@@ -36,77 +26,6 @@ module.exports = function(grunt) {
             },
             coverageIstrument: 'spec/coverage/instrument/',
             prod: ['dist']
-        },
-
-        // browserify
-        browserify: {
-            vendor: {
-                src: ['client/requires/**/*.js'],
-                dest: 'build/vendor.js',
-                options: {
-                    shim: {
-                        jquery: {
-                            path: 'client/requires/jquery/js/jquery.js',
-                            exports: '$'
-                        },
-                        underscore: {
-                            path: 'client/requires/underscore/js/underscore.js',
-                            exports: '_'
-                        },
-                        backbone: {
-                            path: 'client/requires/backbone/js/backbone.js',
-                            exports: 'Backbone',
-                            depends: {
-                                underscore: 'underscore'
-                            }
-                        },
-                        'backbone.marionette': {
-                            path: 'client/requires/backbone.marionette/js/backbone.marionette.js',
-                            exports: 'Marionette',
-                            depends: {
-                                jquery: '$',
-                                backbone: 'Backbone',
-                                underscore: '_'
-                            }
-                        }
-                    }
-                }
-            },
-            app: {
-                files: {
-                    'build/app.js': ['client/src/main.js']
-                },
-                options: {
-                    transform: ['hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
-                }
-            },
-            test: {
-                files: {
-                    'build/tests.js': [
-                        'client/spec/**.*.test.js'
-                    ]
-                },
-                options: {
-                    transform: ['hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
-                }
-            }
-        },
-
-        // LESS
-        // Transpile any .less files to .css and put the .css file in the build
-        // directory named 'myapp'.css
-        less: {
-            transpile: {
-                files: {
-                    'build/<%= pkg.name %>.css' : [
-                        'client/styles/reset.css',
-                        'client/requires/*/css/*',
-                        'client/styles/less/main.less'
-                    ]
-                }
-            }
         },
 
         // Concat
@@ -128,9 +47,6 @@ module.exports = function(grunt) {
                 }, {
                     src: 'build/<%= pkg.name %>.css',
                     dest: 'public/css/<%= pkg.name%.css>'
-                }, {
-                    src: 'client/img/*',
-                    dest: 'public/img/'
                 }]
             },
             views: {
@@ -141,12 +57,6 @@ module.exports = function(grunt) {
                 src: 'spec/**/*',
                 dest: 'spec/coverage/instrument/'
             },
-            prod: {
-                files: [{
-                    src: ['client/img/*'],
-                    dest: 'dist/img/'
-                }]
-            }
         },
 
         // cssmin
@@ -159,27 +69,6 @@ module.exports = function(grunt) {
 
         },
 
-        // watch
-        // Watch all files for any time they get modified. When the do change,
-        // execute pre-existing Grunt tasks already defined.
-        watch: {
-            scripts: {
-                files: ['client/templates/*.hbs', 'client/src/**/*.js'],
-                tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
-            },
-            less: {
-                files: ['client/styles/**/*.less'],
-                tasks: ['less:transpile', 'copy:dev']
-            },
-            test: {
-                files: ['build/app.js', 'client/spec/**/*.test.js'],
-                tasks: ['browserify:test']
-            },
-            karma: {
-                files: ['build/tests.js'],
-                tasks: ['jshint:test', 'karma:watcher:run']
-            }
-        },
 
         // nodemon
         // The same as watch, except for the server related .js files
@@ -214,32 +103,11 @@ module.exports = function(grunt) {
         // asynchronously at the same time
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'shell:mongodb', 'watch:scripts',
-                'watch:less', 'watch:test'],
+                tasks: ['nodemon:dev', 'shell:mongodb'],
                 options: {
                     logConcurrentOutput: true
                 }
             },
-            test: {
-                tasks: ['watch:karma'],
-                options: {
-                    logConcurrentOutput: true
-                }
-            }
-        },
-
-        //test client with karma
-        karma: {
-            options: {
-                configFile: 'karma.conf.js'
-            },
-            watcher: {
-                background: true,
-                singleRun: false
-            },
-            test: {
-                singleRun: true
-            }
         },
 
         // test server with simplemocha
@@ -289,34 +157,33 @@ module.exports = function(grunt) {
         // test for coverage thresholds
         coverage: {
             default: {
-              options: {
-                thresholds: {
-                  'statements': 90,
-                  'branches': 90,
-                  'lines': 90,
-                  'functions': 90
-                },
-                dir: 'coverage',
-                root: 'spec'
-              }
+                options: {
+                    thresholds: {
+                        'statements': 90,
+                        'branches': 90,
+                        'lines': 90,
+                        'functions': 90
+                    },
+                    dir: 'coverage',
+                    root: 'spec'
+                }
             }
         }
     });
 
     // register tasks
     // init:dev
-    grunt.registerTask('init:dev', ['clean', 'bower', 'browserify:vendor']);
+    grunt.registerTask('init:dev', ['clean']);
     // build:dev
-    grunt.registerTask('build:dev', ['clean:dev', 'browserify:app',
-    'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
+    grunt.registerTask('build:dev', ['clean:dev', 'jshint:dev', 'concat',
+    'copy:dev']);
     // build:prod
-    grunt.registerTask('build:prod', ['clean:dev', 'browserify:app',
-    'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
+    grunt.registerTask('build:prod', ['clean:dev', 'browserify:test',
+    'jshint:dev', 'concat', 'copy:dev']);
     // server
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
-    // tdd
-    grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
-    // test:server with coverage
+
+    // test
     grunt.registerTask('test', ['jshint', 'clean:coverage', 'copy:tests',
     'copy:views', 'setTestDir', 'instrument',
     'mochaTest:server',
