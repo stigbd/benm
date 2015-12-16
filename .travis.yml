@@ -7,4 +7,4 @@ before_install: npm install -g grunt-cli phantomjs
 install: npm install
 before_script: grunt init:dev build:dev
 after_success:
-  - coveralls
+  - cat ./spec/coverage/reports/lcov.info | ./node_modules/.bin/coveralls --verbose
