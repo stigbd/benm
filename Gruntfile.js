@@ -59,17 +59,6 @@ module.exports = function(grunt) {
             },
         },
 
-        // cssmin
-        cssmin: {
-
-        },
-
-        // uglify
-        uglify: {
-
-        },
-
-
         // nodemon
         // The same as watch, except for the server related .js files
         // Whenever a node.js file is changed on the server, restart
@@ -178,7 +167,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build:dev', ['clean:dev', 'jshint:dev', 'concat',
     'copy:dev']);
     // build:prod
-    grunt.registerTask('build:prod', ['clean:dev', 'browserify:test',
+    grunt.registerTask('build:prod', ['clean:dev',
     'jshint:dev', 'concat', 'copy:dev']);
     // server
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
