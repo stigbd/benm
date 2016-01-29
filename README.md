@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/stigbd/benm-server.svg?branch=master)](https://travis-ci.org/stigbd/benm-server)
-[![Coverage Status](https://coveralls.io/repos/stigbd/benm/badge.svg?branch=master&service=github)](https://coveralls.io/github/stigbd/benm?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/stigbd/benm-server/badge.svg?branch=master)](https://coveralls.io/github/stigbd/benm-server?branch=master)
 # benm-server
 A boilerplate project for Backbone.js, ExpressJS &amp; node.js, MongoDB based on the book by Jason Krol
 http://kroltech.com/2013/12/29/boilerplate-web-app-using-backbone-js-expressjs-node-js-mongodb/
